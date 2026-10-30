@@ -1,0 +1,21 @@
+module ahb_rslave(
+	input logic HCLK,
+    input  logic HRESETn,
+	 input  logic HSEL,
+    input  logic [31:0] HADDR,
+    input  logic [1:0]  HTRANS,
+    input  logic HWRITE,
+    input  logic [2:0] HSIZE,
+    input  logic [31:0] HWDATA,
+    input  logic HREADY,
+    output logic [31:0] HRDATA,
+    output logic        HREADYOUT,
+    output logic        HRESP
+);
+localparam logic [2:0] HSIZE_WORD    = 3'b010;
+localparam logic [1:0] HTRANS_IDLE   = 2'b00;
+localparam logic [1:0] HTRANS_BUSY   = 2'b01;
+localparam logic [1:0] HTRANS_NONSEQ = 2'b10;
+localparam logic [1:0] HTRANS_SEQ    = 2'b11;
+	
+
