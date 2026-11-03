@@ -1,0 +1,111 @@
+`timescale 1ns/1ps 
+module tb_apb3_rslave;
+	logic PCLK,
+	logic PRESETn,
+	logic PSEL,
+	logic PENABLE,
+	logic PWRITE,
+	logic [7:0] PADDR, // dia chi
+	logic [31:0] PWDATA,// ghi
+	logic [31:0] PRDATA, // doc
+	logic PREADY, // giao dich done
+	logic PSLVERR // bao loi dia chi
+apb3_rslave uut (
+	.PCLK(PCLK),
+	.PRESETn(PRESETn),
+	.PSEL(PSEL),
+	.PENABLE(PENABLE),
+	.PWRITE(PWRITE),
+	.PADDR(PADDR),
+	.PWDATA(PWDATA),
+	.PRDATA(PRDATA),
+	.PREADY(PREADY),
+	.PSLVERR(PSLVERR)
+);
+always #5
+PCLK = ~ PCLK;
+initial begin
+	PCLK = 1'b0;
+	PRESETn = 1'b0;
+	PWRITE = 1'b0;
+	PSEL = 1'b0;
+	PENABLE = 1'b0;
+	PADDR = 8'h0;
+	PWDATA = 0;
+	PRDATA = 0;
+	PREADY = 1'b1;
+	#20;
+	PRESET_n = 1'b1;
+	#10;
+	// test 1
+	@(posedge PCLK); // doc CONTROL 
+		PSEL = 1'b1;
+		PENABLE = 0;
+		PWRITE = 0;
+		PADDR = 8'h00;
+	@(posedge PCLK);
+		PENABLE = 1;
+	@(posedge PCLK);
+		PSEL = 0;
+		PENALBLE = 0;
+		$display("PRDATA = 0x%h", PRDATA); // in ra gia tri
+		#10;
+	@(posedge PCLK); // doc DATA 
+		PSEL = 1'b1;
+		PENABLE = 0;
+		PWRITE = 0;
+		PADDR = 8'h04;
+	@(posedge PCLK);
+		PENABLE = 1;
+	@(posedge PCLK);
+		PSEL = 0;
+		PENALBLE = 0;
+		$display("PRDATA = 0x%h", PRDATA);
+	#10;
+	@(posedge PCLK); // doc STATUS 
+		PSEL = 1'b1;
+		PENABLE = 0;
+		PWRITE = 0;
+		PADDR = 8'h08;
+	@(posedge PCLK);
+		PENABLE = 1;
+	@(posedge PCLK);
+		PSEL = 0;
+		PENALBLE = 0 ;
+		$display("PRDATA = 0x%h", PRDATA);
+	#10;
+	// Test 2:
+	@(posedge PCLK);
+		PSEL = 1 ;
+		PENABLE = 0;
+		PWRITE = 1;
+		PADDR = 8'h00;
+		PWDATA [0] = 1;
+	@(posedge PCLK);
+		PENABLE =1;
+	@()
+		
+		
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+
+		
+		
+	
+	
+	
+
+
+
+

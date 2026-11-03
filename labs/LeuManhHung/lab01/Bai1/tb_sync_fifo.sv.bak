@@ -1,0 +1,25 @@
+`timescale 1ns/1ps 
+module tb_sync_fifo;
+	clk;
+	rst_n;
+	wr_en;
+	[7:0] wr_data;
+	rd_en;
+	[7:0] rd_data;
+	rd_valid;
+	full;
+	empty;
+	[3:0] count;
+   sync_fifo uut (
+		.clk(clk),
+		.rst_n(rst_n),
+		.wr_en(wr_en),
+		.wr_data(wr_data),
+		.rd_en(rd_en),
+		.rd_data(rd_data),
+		.rd_valid(rd_valid),
+		.full(full),
+		.empty(empty),
+		.count(count)
+    );
+	 

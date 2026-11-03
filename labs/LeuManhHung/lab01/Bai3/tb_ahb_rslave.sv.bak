@@ -1,0 +1,97 @@
+`timescale 1ns / 1ps
+module tb_ahb_rslave;
+    logic        HCLK;
+    logic        HRESETn;
+    logic        HSEL;
+    logic [31:0] HADDR;
+    logic [ 1:0] HTRANS;
+    logic        HWRITE;
+    logic [ 2:0] HSIZE;
+    logic [31:0] HWDATA;
+    logic        HREADY;
+    
+    logic [31:0] HRDATA;
+    logic        HREADYOUT;
+    logic        HRESP;
+ahb_rslave dut (
+  .HCLK(HCLK),
+  .HRESETn(HRESETn),
+  .HSEL(HSEL),
+  .HADDR(HADDR),
+  .HTRANS(HTRANS),
+  .HWRITE(HWRITE),
+  .HSIZE(HSIZE),
+  .HWDATA(HWDATA),
+  .HREADY(HREADY),
+  .HRDATA(HRDATA),
+  .HREADYOUT(HREADYOUT),
+  .HRESP(HRESP)
+);
+initial HCLK = 0;
+    always #5 HCLK = ~HCLK;
+initial begin
+	// reset
+	HRESETn = 0;
+	HSEL    = 1'b0;
+	HADDR   = 32'h0;
+	HTRANS  = 2'b00;
+	HWRITE  = 1'b0;
+	HSIZE   = 3'b010;
+	HWDATA  = 32'h0;
+	HREADY  = 1'b1;
+	#20;
+	HRESETn = 1; // tat reset
+	#10;
+	// Test 1: Reset, 4 thanh ghi = 0
+	@(posedge HCLK); // Ca 4 = 0
+		HSEL=1; HTRANS=2'b10; HWRITE=0; HADDR=32'h00; // doc reg0
+   @(posedge HCLK); 
+		HSEL=1; HTRANS=2'b10; HWRITE=0; HADDR=32'h04; // doc reg1
+   @(posedge HCLK); 
+		HSEL=1; HTRANS=2'b10; HWRITE=0; HADDR=32'h08; // doc reg2
+	@(posedge HCLK); 
+	   HSEL=1; HTRANS=2'b10; HWRITE=0; HADDR=32'h0C; // doc reg3
+	#10;
+	// Test 2: Doc HWDATA o xung clock tiep theo
+	@(posedge HCLK);
+		HSEL = 1; HTRANS = 2'b10; HWRITE =1; HADDR = 32'h00;
+		HWDATA = 32'h01; // Luc nay HWDATA ch dc dung
+	@(posedge HCLK);
+		HSEL = 1; HTRANS = 2'b10; HWRITE =0; HADDR =32'h00;
+	@(posedge HCLK);
+        HSEL = 0; HTRANS = 2'b00; // dong bang 	
+	
+	#10;
+	
+	// Test 3: Ghi lien reg0,reg1
+	@(posedge HCLK); HSEL=1; HTRANS=2'b10; HWRITE=1; HADDR=32'h00; HWDATA=32'hAAAA_AAAA; 
+   @(posedge HCLK); HSEL=1; HTRANS=2'b10; HWRITE=1; HADDR=32'h04; HWDATA=32'hBBBB_BBBB;
+	#10;
+	// Test 4: Khong tao giao dich
+	@(posedge HCLK); HSEL =1; HTRANS = 2'b00; HWRITE =1; HADDR = 32'h00;HWDATA=32'hEEEE_EEEE;
+	@(posedge HCLK); HSEL =0; HTRANS = 2'b00; HWRITE =1; HADDR = 32'h00;HWDATA=32'hEEEE_EEEE;
+	// Test 5:
+	@(posedge HCLK); HSEL=1; HTRANS=2'b10; HWRITE=1; HADDR=32'h08; HWDATA=32'h7777_7777; HREADY=1'b0; 
+   @(posedge HCLK); 
+   @(posedge HCLK); HREADY=1'b1; HADDR=32'h08; // Address phase  
+	// Test 6:
+	@(posedge HCLK); HSEL=1; HTRANS=2'b10; HWRITE=1; HADDR=32'h0C; HSIZE=3'b000; HWDATA=32'h9999_9999; // sai size
+   @(posedge HCLK); HSEL=1; HTRANS=2'b10; HWRITE=1; HADDR=32'h10; HSIZE=3'b010; HWDATA=32'h8888_8888; // sai dia chi
+   @(posedge HCLK); HSEL=1; HTRANS=2'b10; HWRITE=0; HADDR=32'h10; HSIZE=3'b010; // ngoai map
+	#10;
+	@(posedge HCLK);
+        HSEL   = 1'b0;
+        HTRANS = 2'b00;
+        #30;
+        $finish;
+    end
+endmodule
+   
+		
+		
+		
+	
+		
+
+
+ 

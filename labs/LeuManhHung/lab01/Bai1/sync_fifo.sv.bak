@@ -1,0 +1,11 @@
+module sunc_fifo #(
+	parameter int WIDTH_DATA = 8
+	parameter int DEPTH_FIFO = 8
+)
+(	input clk,
+	input rst_n, 
+	input wr_en,
+	input wr_data [WIDTH_DATA:0],
+	input 
+)
+
